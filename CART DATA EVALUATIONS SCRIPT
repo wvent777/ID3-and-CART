@@ -1,0 +1,331 @@
+# Abalone Regression Problem
+abaloneheader = ['Sex', 'Length', 'Diameter', 'Height', 'Whole Weight', 'Shucked Weight', 'Viscera Weight'
+    , 'Shell Weight', 'Rings']
+
+abaloneDF = pd.read_csv('data/abalone.data', names=abaloneheader)
+abaloneDF = abaloneDF[['Length', 'Diameter', 'Height', 'Whole Weight', 'Shucked Weight', 'Viscera Weight', 'Shell Weight', 'Rings']]
+abaloneDF_80 = abaloneDF.sample(frac=0.8)
+abaloneTuningDF = abaloneDF.drop(abaloneDF_80.index)
+
+# print('Abalone Regression Problem \n')
+# print(abaloneDF.head())
+# print('This is the size of the original:', len(abaloneDF))
+# print('This is the size of the 80%:', len(abaloneDF_80))
+# print('This is the size of the 20%:', len(abaloneTuningDF), '\n')
+
+abaloneTuningNP = abaloneTuningDF.to_numpy()
+abaloneDF_80 = abaloneDF_80.to_numpy()
+
+# Cross Validation for the tuning on mse criterion
+AbaloneTuningDepth = [x for x in range(1,11,2)]
+AbaloneTuningMin = [x/100 for x in range(5,30,5)]
+
+# AbaloneTuningResults = []
+# for depth in AbaloneTuningDepth:
+#     for min in AbaloneTuningMin:
+#         print(f'For These Hyper-Parameters: {depth} and {min}')
+#         mse,AbaloneTuningList = CrossValidation(abaloneTuningNP, 5, CART_algo, tree='reg', criterion='mse', prune='criterion', maxDepth=depth, minCriterion=min)
+#         instance = (depth, min, mse)
+#         AbaloneTuningResults.append(instance)
+#
+# AbaloneResultsDF = pd.DataFrame(AbaloneTuningResults, columns=['Max Depth', 'Minimum Criterion', 'MSE'])
+# AbaloneX = AbaloneResultsDF['Max Depth']
+# AbaloneY = AbaloneResultsDF['Minimum Criterion']
+# AbaloneZ = AbaloneResultsDF['MSE']
+#
+#
+# AbaloneTable = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Criterion', 'MSE']),
+#                                cells =dict(values=[AbaloneX, AbaloneY, AbaloneZ]))])
+# AbaloneTable.update_layout(width=800, height = 2900)
+# AbaloneTable.show()
+#
+# # Figure
+# AbaloneTrace = go.Scatter3d(
+#    x = AbaloneX, y= AbaloneY, z = AbaloneZ, mode = 'markers', marker = dict(
+#       size = 12,
+#       color = AbaloneZ,
+#       colorscale = 'Magma'
+#       )
+#    )
+# layout = go.Layout(title ='Abalone Pruned Tree Hyper Parameter 3D Scatter Plot')
+# AbaloneFig = go.Figure(data =[AbaloneTrace], layout = layout)
+# AbaloneFig.update_layout(scene = dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Criterion',
+#                     zaxis_title='MSE'))
+# AbaloneFig.show()
+#
+# # No Pruning Cross validation
+#
+# AbaloneTuningNPResults = []
+# for min in AbaloneTuningMin:
+#     mse, AbaloneNPTuningList = CrossValidation(abaloneTuningNP, 5, CART_algo, tree='reg', criterion='mse', prune='criterion', maxDepth=0, minCriterion=min)
+#     instance = (0,min,mse)
+#     AbaloneTuningNPResults.append(instance)
+# # Table
+# AbaloneResultsNPDF = pd.DataFrame(AbaloneTuningNPResults, columns=['Max Depth', 'Minimum Criterion', 'MSE'])
+# AbaloneNPX = AbaloneResultsNPDF['Max Depth']
+# AbaloneNPY = AbaloneResultsNPDF['Minimum Criterion']
+# AbaloneNPZ = AbaloneResultsNPDF['MSE']
+#
+# AbaloneTableNP = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Criterion', 'MSE']),
+#                                cells =dict(values=[AbaloneNPX, AbaloneNPY, AbaloneNPZ]))])
+# AbaloneTableNP.update_layout(width = 800, height = 2900)
+# AbaloneTableNP.show()
+#
+# # Figure
+# AbaloneTraceNP = go.Scatter3d(
+#    x = AbaloneNPX, y= AbaloneNPY, z = AbaloneNPZ, mode = 'markers', marker = dict(
+#       size = 12,
+#       color = AbaloneNPZ,
+#       colorscale = 'Magma'
+#       )
+#    )
+# AbaloneLayoutNP = go.Layout(title ='Abalone Unpruned Tree Hyper Parameter 3D Scatter Plot')
+# AbaloneFigNP = go.Figure(data =[AbaloneTraceNP], layout=AbaloneLayoutNP)
+# AbaloneFigNP.update_layout(scene = dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Criterion',
+#                     zaxis_title='MSE'))
+# AbaloneFigNP.show()
+
+# Testing Pruned and NonPruned Trees
+# numFolds = [1,2,3,4,5]
+# print('Pruned Tree Results')
+# AbaloneTestingPrunedResults, AbaloneTestingPrunedList = CrossValidation(abaloneDF_80, 5, CART_algo,tree='reg', criterion='mse', prune='criterion', maxDepth=3, minCriterion=0.25)
+# print('Unpruned Tree Results')
+# AbaloneTestingNPResults, AbaloneTestingNPList = CrossValidation(abaloneDF_80, 5, CART_algo,tree='reg', criterion='mse', prune='criterion', maxDepth=0, minCriterion=0.2)
+#
+# AbaloneDict = {'Folds': numFolds, 'Pruned':AbaloneTestingPrunedList,'Non-Pruned':AbaloneTestingNPList}
+#
+# finalAbaloneResults = pd.DataFrame(AbaloneDict)
+#
+# AbaloneFinalFig = px.scatter(finalAbaloneResults, x='Folds', y=['Pruned', 'Non-Pruned'] , title="K-Fold vs. MSE", width=800, height=600)
+# AbaloneFinalFig.update_traces(marker_size = 15)
+# AbaloneFinalFig.update_yaxes(title_text = 'MSE')
+# AbaloneFinalFig.show()
+
+######################################
+CAR Evaluation
+
+# Computer Hardware
+computerHeader = ['Vendor', 'Model', 'MYCT', 'MMIN', 'MMAX', 'CACH', 'CHMIN', 'CHMAX', 'PRP', 'ERP']
+# ERP is the guess from the paper
+# Vendor and Model are non-predictive
+
+computerDF = pd.read_csv('data/machine.data', names=computerHeader)
+computerDF = computerDF[['MYCT','MMIN', 'MMAX', 'CACH', 'CHMIN', 'CHMAX', 'PRP']]
+computerDF = computerDF.astype(float)
+print('Computer Regression Problem \n')
+print('removed values')
+print(computerDF.head())
+computerDF_80 = computerDF.sample(frac=0.8)
+computerTuningDF = computerDF.drop(computerDF_80.index)
+print('This is the size of the original:', len(computerDF))
+print('This is the size of the 80%:', len(computerDF_80))
+print('This is the size of the 20%:', len(computerTuningDF), '\n')
+
+computerTuningNP = computerTuningDF.to_numpy()
+computerDF_80 = computerDF_80.to_numpy()
+
+# Cross Validation for the tuning on mse criterion
+# ComputerTuningDepth = [x for x in range(100,550,50)]
+# ComputerTuningMin = [x/10 for x in range(5,30,5)]
+#
+# ComputerTuningResults = []
+# for depth in ComputerTuningDepth:
+#     for min in ComputerTuningMin:
+#         print(f'For These Hyper-Parameters: {depth} and {min}')
+#         mse,ComputerTuningList = CrossValidation(computerTuningNP, 5, CART_algo, tree='reg', criterion='mse', prune='criterion', maxDepth=depth, minCriterion=min)
+#         instance = (depth, min, mse)
+#         ComputerTuningResults.append(instance)
+#
+# ComputerResultsDF = pd.DataFrame(ComputerTuningResults, columns=['Max Depth', 'Minimum Criterion', 'MSE'])
+# ComputerX = ComputerResultsDF['Max Depth']
+# ComputerY = ComputerResultsDF['Minimum Criterion']
+# ComputerZ = ComputerResultsDF['MSE']
+#
+#
+# ComputerTable = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Criterion', 'MSE']),
+#                                cells =dict(values=[ComputerX, ComputerY, ComputerZ]))])
+# ComputerTable.update_layout(width=800, height = 2900)
+# ComputerTable.show()
+#
+# # Figure
+# ComputerTrace = go.Scatter3d(
+#    x = ComputerX, y= ComputerY, z = ComputerZ, mode = 'markers', marker = dict(
+#       size = 12,
+#       color = ComputerZ,
+#       colorscale = 'Magma'
+#       )
+#    )
+# layout = go.Layout(title ='Computer Pruned Tree Hyper Parameter 3D Scatter Plot')
+# ComputerFig = go.Figure(data =[ComputerTrace], layout = layout)
+# ComputerFig.update_layout(scene = dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Criterion',
+#                     zaxis_title='MSE'))
+# ComputerFig.show()
+#
+# # No Pruning Cross validation
+#
+# ComputerTuningNPResults = []
+# for min in ComputerTuningMin:
+#     mse, ComputerNPTuningList = CrossValidation(computerTuningNP, 5, CART_algo, tree='reg', criterion='mse', prune='criterion', maxDepth=0, minCriterion=min)
+#     instance = (0,min,mse)
+#     ComputerTuningNPResults.append(instance)
+# # Table
+# ComputerResultsNPDF = pd.DataFrame(ComputerTuningNPResults, columns=['Max Depth', 'Minimum Criterion', 'MSE'])
+# ComputerNPX = ComputerResultsNPDF['Max Depth']
+# ComputerNPY = ComputerResultsNPDF['Minimum Criterion']
+# ComputerNPZ = ComputerResultsNPDF['MSE']
+#
+# ComputerTableNP = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Criterion', 'MSE']),
+#                                cells =dict(values=[ComputerNPX, ComputerNPY, ComputerNPZ]))])
+# ComputerTableNP.update_layout(width = 800, height = 2900)
+# ComputerTableNP.show()
+#
+# # Figure
+# ComputerTraceNP = go.Scatter3d(
+#    x = ComputerNPX, y= ComputerNPY, z = ComputerNPZ, mode = 'markers', marker = dict(
+#       size = 12,
+#       color = ComputerNPZ,
+#       colorscale = 'Magma'
+#       )
+#    )
+# ComputerLayoutNP = go.Layout(title ='Computer Unpruned Tree Hyper Parameter 3D Scatter Plot')
+# ComputerFigNP = go.Figure(data =[ComputerTraceNP], layout=ComputerLayoutNP)
+# ComputerFigNP.update_layout(scene = dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Criterion',
+#                     zaxis_title='MSE'))
+# ComputerFigNP.show()
+
+#Testing Pruned and NonPruned Trees
+numFolds = [1,2,3,4,5]
+print('Pruned Tree Results')
+ComputerTestingPrunedResults, ComputerTestingPrunedList = CrossValidation(computerDF_80, 5, CART_algo,tree='reg', criterion='mse', prune='criterion', maxDepth=250, minCriterion=2.0)
+print('Unpruned Tree Results')
+ComputerTestingNPResults, ComputerTestingNPList = CrossValidation(computerDF_80, 5, CART_algo,tree='reg', criterion='mse', prune='criterion', maxDepth=0, minCriterion=2.5)
+
+ComputerDict = {'Folds': numFolds, 'Pruned':ComputerTestingPrunedList,'Non-Pruned':ComputerTestingNPList}
+
+finalComputerResults = pd.DataFrame(ComputerDict)
+
+ComputerFinalFig = px.scatter(finalComputerResults, x='Folds', y=['Pruned', 'Non-Pruned'] , title="K-Fold vs. MSE", width=800, height=600)
+ComputerFinalFig.update_traces(marker_size = 15)
+ComputerFinalFig.update_yaxes(title_text = 'MSE')
+ComputerFinalFig.show()
+
+####################################################################################################################################################
+FOREST FIRES
+
+# # Forest Fires
+forestDF = pd.read_csv('data/forestfires.data', header=0)
+forestDF = forestDF[['X', 'Y', 'month', 'day', 'FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH',
+                'wind', 'rain', 'area']]
+
+forestDF['month'] = pd.to_datetime(forestDF['month'], format='%b').dt.month
+weekday_map = {'mon':1.0,'tue':2.0,'wed':3.0,'thu':4.0,'fri':5.0,'sat':6.0,'sun':7.0}
+forestDF = forestDF.replace({'day':weekday_map})
+forestDF = forestDF.astype(float)
+print('Forest Fire Regression Problem \n')
+print(forestDF.head())
+
+forestDF_80 = forestDF.sample(frac=0.8)
+forestTuningDF = forestDF.drop(forestDF_80.index)
+print('This is the size of the original:', len(forestDF))
+print('This is the size of the 80%:', len(forestDF_80))
+print('This is the size of the 20%:', len(forestTuningDF), '\n')
+
+forestTuningNP = forestTuningDF.to_numpy()
+forestDF_80 = forestDF_80.to_numpy()
+
+# Cross Validation for the tuning on mse criterion
+ForestTuningDepth = [x for x in range(10,100,20)]
+ForestTuningMin = [x/10 for x in range(5,30,5)]
+
+ForestTuningResults = []
+for depth in ForestTuningDepth:
+    for min in ForestTuningMin:
+        print(f'For These Hyper-Parameters: {depth} and {min}')
+        mse,ForestTuningList = CrossValidation(forestTuningNP, 5, CART_algo, tree='reg', criterion='mse', prune='criterion', maxDepth=depth, minCriterion=min)
+        instance = (depth, min, mse)
+        ForestTuningResults.append(instance)
+
+ForestResultsDF = pd.DataFrame(ForestTuningResults, columns=['Max Depth', 'Minimum Criterion', 'MSE'])
+ForestX = ForestResultsDF['Max Depth']
+ForestY = ForestResultsDF['Minimum Criterion']
+ForestZ = ForestResultsDF['MSE']
+
+
+ForestTable = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Criterion', 'MSE']),
+                               cells =dict(values=[ForestX, ForestY, ForestZ]))])
+ForestTable.update_layout(width=800, height = 2900)
+ForestTable.show()
+
+# Figure
+ForestTrace = go.Scatter3d(
+   x = ForestX, y= ForestY, z = ForestZ, mode = 'markers', marker = dict(
+      size = 12,
+      color = ForestZ,
+      colorscale = 'Magma'
+      )
+   )
+layout = go.Layout(title ='Forest Pruned Tree Hyper Parameter 3D Scatter Plot')
+ForestFig = go.Figure(data =[ForestTrace], layout = layout)
+ForestFig.update_layout(scene = dict(
+                    xaxis_title='Max Depth',
+                    yaxis_title='Minimum Criterion',
+                    zaxis_title='MSE'))
+ForestFig.show()
+
+# No Pruning Cross validation
+
+ForestTuningNPResults = []
+for min in ForestTuningMin:
+    mse, ForestNPTuningList = CrossValidation(forestTuningNP, 5, CART_algo, tree='reg', criterion='mse', prune='criterion', maxDepth=0, minCriterion=min)
+    instance = (0,min,mse)
+    ForestTuningNPResults.append(instance)
+# Table
+ForestResultsNPDF = pd.DataFrame(ForestTuningNPResults, columns=['Max Depth', 'Minimum Criterion', 'MSE'])
+ForestNPX = ForestResultsNPDF['Max Depth']
+ForestNPY = ForestResultsNPDF['Minimum Criterion']
+ForestNPZ = ForestResultsNPDF['MSE']
+
+ForestTableNP = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Criterion', 'MSE']),
+                               cells =dict(values=[ForestNPX, ForestNPY, ForestNPZ]))])
+ForestTableNP.update_layout(width = 800, height = 2900)
+ForestTableNP.show()
+
+# Figure
+ForestTraceNP = go.Scatter3d(
+   x = ForestNPX, y= ForestNPY, z = ForestNPZ, mode = 'markers', marker = dict(
+      size = 12,
+      color = ForestNPZ,
+      colorscale = 'Magma'
+      )
+   )
+ForestLayoutNP = go.Layout(title ='Forest Unpruned Tree Hyper Parameter 3D Scatter Plot')
+ForestFigNP = go.Figure(data =[ForestTraceNP], layout=ForestLayoutNP)
+ForestFigNP.update_layout(scene = dict(
+                    xaxis_title='Max Depth',
+                    yaxis_title='Minimum Criterion',
+                    zaxis_title='MSE'))
+ForestFigNP.show()
+
+#Testing Pruned and NonPruned Trees
+numFolds = [1,2,3,4,5]
+print('Pruned Tree Results')
+ForestTestingPrunedResults, ForestTestingPrunedList = CrossValidation(forestDF_80, 5, CART_algo,tree='reg', criterion='mse', prune='criterion', maxDepth=90, minCriterion=2.5)
+print('Unpruned Tree Results')
+ForestTestingNPResults, ForestTestingNPList = CrossValidation(forestDF_80, 5, CART_algo,tree='reg', criterion='mse', prune='criterion', maxDepth=0, minCriterion=2.5)
+
+ForestDict = {'Folds': numFolds, 'Pruned':ForestTestingPrunedList,'Non-Pruned':ForestTestingNPList}
+
+finalForestResults = pd.DataFrame(ForestDict)
+
+ForestFinalFig = px.scatter(finalForestResults, x='Folds', y=['Pruned', 'Non-Pruned'] , title="K-Fold vs. MSE", width=800, height=600)
+ForestFinalFig.update_traces(marker_size = 15)
+ForestFinalFig.update_yaxes(title_text = 'MSE')
+ForestFinalFig.show()

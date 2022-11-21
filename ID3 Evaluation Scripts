@@ -1,0 +1,370 @@
+
+# Car Classification
+carheader = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'acceptability']
+carDF = pd.read_csv('data/car.data', names = carheader)
+carDF_80 = carDF.sample(frac=0.8)
+carTuningDF = carDF.drop(carDF_80.index)
+
+carTuningDF = carTuningDF.reset_index(drop=True)
+carDF_80 = carDF_80.reset_index(drop=True)
+
+# Pruning Tuning Cross Validation
+depthTuning = [x for x in range(2, 12, 2)]
+splitTuning = [x for x in range(2, 12, 2)]
+gainTuning = [x/10 for x in range(2, 12, 2)]
+numFolds = [1,2,3,4,5]
+
+# carParameters = []
+# carAccuracy = []
+# carTuningResults = []
+# for depth in depthTuning:
+#     for split in splitTuning:
+#         for gain in gainTuning:
+#             parameters = (depth,split,gain)
+#             accuracy = CrossValidation(carTuningDF, 5, ID3_algo, maxDepth=depth, minSplit=split, minGain=gain)
+#             averageAccuracy = sum(accuracy)/len(accuracy)
+#             carAccuracy.append(averageAccuracy)
+#             carParameters.append(parameters)
+#             result = (depth,split,gain, averageAccuracy)
+#             carTuningResults.append(result)
+#             print(f'Hyper-parameters (Max Depth, Minimum Split, Minimum Gain) : {parameters}')
+#             print(f'5 Fold Cross Validation Average Accuracy : {averageAccuracy}%\n')
+#
+# # Table
+# carResultsDF = pd.DataFrame(carTuningResults, columns=['Depth', 'Split', 'Gain', 'Average Accuracy'])
+# carX = carResultsDF['Depth']
+# carY = carResultsDF['Split']
+# carZ = carResultsDF['Gain']
+# carV = carResultsDF['Average Accuracy']
+#
+# carTable = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Split', 'Minimum Gain', 'Accuracy']),
+#                                cells =dict(values=[carX, carY, carZ, carV]))])
+# carTable.update_layout(width = 800, height = 2900)
+# carTable.show()
+#
+# # Figure
+# carTrace = go.Scatter3d(
+#    x = carX, y= carY, z = carV, mode = 'markers', marker = dict(
+#       size = 12,
+#       color = carZ,
+#       colorscale = 'Agsunset'
+#       )
+#    )
+# layout = go.Layout(title ='Car Pruning Hyper Parameter 3D Scatter Plot')
+# carFig = go.Figure(data =[carTrace], layout = layout)
+# carFig.update_layout(scene = dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Split',
+#                     zaxis_title='Accuracy'))
+# carFig.show()
+#
+# # No Pruning Cross validation
+# carResultsNP = []
+# carAccuracyNP = []
+# carParametersNP = []
+# for gain in gainTuning:
+#     parametersNP = (0,0,gain)
+#     accuracyNP = CrossValidation(carTuningDF, 5, ID3_algo, maxDepth=0, minSplit=0, minGain=gain)
+#     averageAccuracyNP = sum(accuracyNP)/len(accuracyNP)
+#     carAccuracyNP.append(averageAccuracyNP)
+#     carParametersNP.append(tuple)
+#     resultNP = (0, 0, gain, averageAccuracyNP)
+#     carResultsNP.append(resultNP)
+#     print(f'Hyper-parameters (Max Depth, Minimum Split, Minimum Gain : {parametersNP}\n')
+#     print(f'The average accuracy given these Hyper-parameters : {averageAccuracyNP}%\n')
+#
+# # Table
+# carResultsNPDF = pd.DataFrame(carResultsNP, columns=['Depth', 'Split', 'Gain', 'Average Accuracy'])
+# carNPX = carResultsNPDF['Depth']
+# carNPY = carResultsNPDF['Split']
+# carNPZ = carResultsNPDF['Gain']
+# carNPV = carResultsNPDF['Average Accuracy']
+#
+# carTableNP = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Split', 'Minimum Gain', 'Accuracy']),
+#                                cells =dict(values=[carNPX, carNPY, carNPZ, carNPV]))])
+# carTableNP.update_layout(width = 800, height = 2900)
+# carTableNP.show()
+#
+# # Figure
+# carTraceNP = go.Scatter3d(
+#    x = carNPX, y= carNPZ, z = carNPV, mode = 'markers', marker = dict(
+#       size = 12,
+#       color = carNPV,
+#       colorscale = 'Agsunset'
+#       )
+#    )
+# layoutNP = go.Layout(title ='Car No Pruning Hyper Parameter 3D Scatter Plot')
+# carFigNP = go.Figure(data =[carTraceNP], layout = layoutNP)
+# carFigNP.update_layout(scene = dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Gain',
+#                     zaxis_title='Accuracy'))
+# carFigNP.show()
+
+# Testing Pruned and NonPruned Trees
+#
+# print('Pruned Tree Results')
+# carTestingPrunedResults = CrossValidation(carDF_80, 5, ID3_algo, maxDepth= 6, minSplit=6, minGain= 0.4)
+#
+# print('Unpruned Tree Results')
+# carTestingNPResults = CrossValidation(carDF_80, 5, ID3_algo, maxDepth=0, minSplit=0, minGain= 0.4)
+#
+# carDict = {'Folds': numFolds, 'Pruned':carTestingPrunedResults,'Non-Pruned':carTestingNPResults}
+# finalCarResults = pd.DataFrame(carDict)
+#
+# carFinalFig = px.scatter(finalCarResults, x='Folds', y=['Pruned', 'Non-Pruned'] , title="K-Fold vs. Accuracy", width=800, height=600)
+# carFinalFig.update_traces(marker_size = 15)
+# carFinalFig.update_yaxes(title_text = 'Accuracy %')
+# carFinalFig.show()
+
+
+# House Vote Classification
+HouseHeader = ['Class', 'handicapped-infants', 'water-project-cost-sharing', 'adoption-of-the-budget-resolution',
+               'physician-fee-freeze', 'el-salvador-aid', 'religious-groups-in-schools',
+               'anti-satellite-test-ban','aid-to-nicaraguan-contras','mx-missile', 'immigration',
+               'synfuels-corporation-cutback', 'education-spending', 'superfund-right-to-sue', 'crime',
+               'duty-free-exports', 'export-administration-act-south-africa']
+HouseDF = pd.read_csv('data/house-votes-84.data', names=HouseHeader)
+
+HouseDF = HouseDF.reindex(columns=['handicapped-infants', 'water-project-cost-sharing', 'adoption-of-the-budget-resolution',
+               'physician-fee-freeze', 'el-salvador-aid', 'religious-groups-in-schools',
+               'anti-satellite-test-ban','aid-to-nicaraguan-contras','mx-missile', 'immigration',
+               'synfuels-corporation-cutback', 'education-spending', 'superfund-right-to-sue', 'crime',
+               'duty-free-exports', 'export-administration-act-south-africa', 'Class'])
+
+# HouseDF_80 = HouseDF.sample(frac=0.8)
+# HouseTuningDF = HouseDF.drop(HouseDF_80.index)
+#
+# HouseTuningDF = HouseTuningDF.reset_index(drop=True)
+# HouseDF_80 = HouseDF_80.reset_index(drop=True)
+#
+# HouseParameters = []
+# HouseAccuracy = []
+# HouseTuningResults = []
+# for depth in depthTuning:
+#     for split in splitTuning:
+#         for gain in gainTuning:
+#             parameters = (depth,split,gain)
+#             accuracy = CrossValidation(HouseTuningDF, 5, ID3_algo, maxDepth=depth, minSplit=split, minGain=gain)
+#             averageAccuracy = sum(accuracy)/len(accuracy)
+#             HouseAccuracy.append(averageAccuracy)
+#             HouseParameters.append(parameters)
+#             result = (depth,split,gain, averageAccuracy)
+#             HouseTuningResults.append(result)
+#             print(f'Hyper-parameters (Max Depth, Minimum Split, Minimum Gain) : {parameters}')
+#
+# HouseOP = max(HouseTuningResults, key=itemgetter(3))
+# print('These are the Optimal Parameters')
+# print(HouseOP)
+#
+# # Table
+# HouseResultsDF = pd.DataFrame(HouseTuningResults, columns=['Depth', 'Split', 'Gain', 'Average Accuracy'])
+# HouseX = HouseResultsDF['Depth']
+# HouseY = HouseResultsDF['Split']
+# HouseZ = HouseResultsDF['Gain']
+# HouseV = HouseResultsDF['Average Accuracy']
+#
+# HouseTable = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Split', 'Minimum Gain', 'Accuracy']),
+#                                cells =dict(values=[HouseX, HouseY, HouseZ, HouseV]))])
+# HouseTable.update_layout(width = 800, height = 2900)
+# HouseTable.show()
+#
+# # Figure
+# HouseTrace = go.Scatter3d(
+#    x = HouseX, y= HouseY, z = HouseV, mode = 'markers', marker = dict(
+#       size = 12,
+#       color = HouseZ,
+#       colorscale = 'Agsunset'
+#       )
+#    )
+# layout = go.Layout(title ='House Pruning Hyper Parameter 3D Scatter Plot')
+# HouseFig = go.Figure(data =[HouseTrace], layout = layout)
+# HouseFig.update_layout(scene = dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Split',
+#                     zaxis_title='Accuracy'))
+# HouseFig.show()
+#
+# # No Pruning Cross validation
+# HouseResultsNP = []
+# HouseAccuracyNP = []
+# HouseParametersNP = []
+# for gain in gainTuning:
+#     parametersNP = (0,0,gain)
+#     accuracyNP = CrossValidation(HouseTuningDF, 5, ID3_algo, maxDepth=0, minSplit=0, minGain=gain)
+#     averageAccuracyNP = sum(accuracyNP)/len(accuracyNP)
+#     HouseAccuracyNP.append(averageAccuracyNP)
+#     HouseParametersNP.append(parametersNP)
+#     resultNP = (0, 0, gain, averageAccuracyNP)
+#     HouseResultsNP.append(resultNP)
+#     print(f'Hyper-parameters (Max Depth, Minimum Split, Minimum Gain : {parametersNP}\n')
+#     print(f'The average accuracy given these Hyper-parameters : {averageAccuracyNP}%\n')
+#
+# # Table
+# HouseResultsNPDF = pd.DataFrame(HouseResultsNP, columns=['Depth', 'Split', 'Gain', 'Average Accuracy'])
+# HouseNPX = HouseResultsNPDF['Depth']
+# HouseNPY = HouseResultsNPDF['Split']
+# HouseNPZ = HouseResultsNPDF['Gain']
+# HouseNPV = HouseResultsNPDF['Average Accuracy']
+#
+# HouseTableNP = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Split', 'Minimum Gain', 'Accuracy']),
+#                                cells =dict(values=[HouseNPX, HouseNPY, HouseNPZ, HouseNPV]))])
+# HouseTableNP.update_layout(width = 800, height = 2900)
+# HouseTableNP.show()
+#
+# # Figure
+# HouseTraceNP = go.Scatter3d(
+#    x = HouseNPX, y= HouseNPZ, z = HouseNPV, mode = 'markers', marker = dict(
+#       size = 12,
+#       color = HouseNPV,
+#       colorscale = 'Agsunset'
+#       )
+#    )
+# layoutNP = go.Layout(title ='House No Pruning Hyper Parameter 3D Scatter Plot')
+# HouseFigNP = go.Figure(data =[HouseTraceNP], layout = layoutNP)
+# HouseFigNP.update_layout(scene = dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Gain',
+#                     zaxis_title='Accuracy'))
+# HouseFigNP.show()
+
+# Testing Pruned and NonPruned Trees
+
+# print('Pruned Tree Results')
+# HouseTestingPrunedResults = CrossValidation(HouseDF_80, 5, ID3_algo, maxDepth= 6, minSplit=2, minGain= 0.2)
+#
+# print('Unpruned Tree Results')
+# HouseTestingNPResults = CrossValidation(carDF_80, 5, ID3_algo, maxDepth=0, minSplit=0, minGain= 0.2)
+#
+# HouseDict = {'Folds': numFolds, 'Pruned':HouseTestingPrunedResults,'Non-Pruned':HouseTestingNPResults}
+# finalCarResults = pd.DataFrame(HouseDict)
+#
+# HouseFinalFig = px.scatter(finalCarResults, x='Folds', y=['Pruned', 'Non-Pruned'] , title="K-Fold vs. Accuracy", width=800, height=600)
+# HouseFinalFig.update_traces(marker_size = 15)
+# HouseFinalFig.update_yaxes(title_text = 'Accuracy %')
+# HouseFinalFig.show()
+
+
+
+# Cancer Classification
+cancerHeader = ['Sample code number', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell Shape',
+                'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei', 'Bland Chromatin', 'Normal Nucleoli',
+               'Mitoses', 'Class']
+cancerDF = pd.read_csv('data/breast-cancer-wisconsin.data', names=cancerHeader)
+cancerDF = cancerDF.drop('Sample code number', 1)
+
+cancerDF_80 = cancerDF.sample(frac=0.8)
+cancerTuningDF = cancerDF.drop(cancerDF_80.index)
+
+cancerTuningDF = cancerTuningDF.reset_index(drop=True)
+cancerDF_80 = cancerDF_80.reset_index(drop=True)
+
+# cancerParameters = []
+# cancerAccuracy = []
+# cancerTuningResults = []
+# depthTuning2 = [x for x in range(11,14,1)]
+# splitTuning2 = [x for x in range(3,5,1)]
+# gainTuning2 = [x/100 for x in range(20, 50, 10)]
+#
+# for depth in depthTuning2:
+#     for split in splitTuning2:
+#         for gain in gainTuning2:
+#             parameters = (depth,split,gain)
+#             accuracy = CrossValidation(cancerTuningDF, 5, ID3_algo, maxDepth=depth, minSplit=split, minGain=gain)
+#             averageAccuracy = sum(accuracy)/len(accuracy)
+#             cancerAccuracy.append(averageAccuracy)
+#             cancerParameters.append(parameters)
+#             result = (depth,split,gain, averageAccuracy)
+#             cancerTuningResults.append(result)
+#             print(f'Hyper-parameters (Max Depth, Minimum Split, Minimum Gain) : {parameters}')
+#
+# cancerOP = max(cancerTuningResults, key=itemgetter(3))
+# print('These are the Optimal Parameters')
+# print(cancerOP)
+#
+# # Table
+# cancerResultsDF = pd.DataFrame(cancerTuningResults, columns=['Depth', 'Split', 'Gain', 'Average Accuracy'])
+# cancerX = cancerResultsDF['Depth']
+# cancerY = cancerResultsDF['Split']
+# cancerZ = cancerResultsDF['Gain']
+# cancerV = cancerResultsDF['Average Accuracy']
+#
+# cancerTable = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Split', 'Minimum Gain', 'Accuracy']),
+#                                cells =dict(values=[cancerX, cancerY, cancerZ, cancerV]))])
+# cancerTable.update_layout(width = 800, height = 2900)
+# cancerTable.show()
+#
+# # Figure
+# cancerTrace = go.Scatter3d(
+#    x=cancerX, y=cancerY, z=cancerV, mode='markers', marker = dict(
+#       size = 12,
+#       color = cancerZ,
+#       colorscale = 'Agsunset'
+#       )
+#    )
+# layout = go.Layout(title ='Breast Cancer Pruning Hyper Parameter 3D Scatter Plot')
+# cancerFig = go.Figure(data =[cancerTrace], layout = layout)
+# cancerFig.update_layout(scene = dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Split',
+#                     zaxis_title='Accuracy'))
+# cancerFig.show()
+#
+# # No Pruning Cross validation
+# cancerResultsNP = []
+# cancerAccuracyNP = []
+# cancerParametersNP = []
+# for gain in gainTuning:
+#     parametersNP = (0,0, gain)
+#     accuracyNP = CrossValidation(cancerTuningDF, 5, ID3_algo, maxDepth=0, minSplit=0, minGain=gain)
+#     averageAccuracyNP = sum(accuracyNP)/len(accuracyNP)
+#     cancerAccuracyNP.append(averageAccuracyNP)
+#     cancerParametersNP.append(parametersNP)
+#     resultNP = (0, 0, gain, averageAccuracyNP)
+#     cancerResultsNP.append(resultNP)
+#     print(f'Hyper-parameters (Max Depth, Minimum Split, Minimum Gain : {parametersNP}\n')
+#     print(f'The average accuracy given these Hyper-parameters : {averageAccuracyNP}%\n')
+#
+# # Table
+# cancerResultsNPDF =pd.DataFrame(cancerResultsNP, columns=['Depth', 'Split', 'Gain', 'Average Accuracy'])
+# cancerNPX = cancerResultsNPDF['Depth']
+# cancerNPY = cancerResultsNPDF['Split']
+# cancerNPZ = cancerResultsNPDF['Gain']
+# cancerNPV = cancerResultsNPDF['Average Accuracy']
+#
+# cancerTableNP = go.Figure(data=[go.Table(header=dict(values=['Max Depth', 'Minimum Split', 'Minimum Gain', 'Accuracy']),
+#                                cells =dict(values=[cancerNPX, cancerNPY, cancerNPZ, cancerNPV]))])
+# cancerTableNP.update_layout(width = 800, height = 2900)
+# cancerTableNP.show()
+#
+# # Figure
+# cancerTraceNP = go.Scatter3d(
+#    x=cancerNPX, y=cancerNPZ, z=cancerNPV, mode='markers', marker=dict(
+#       size=12,
+#       color=cancerNPV,
+#       colorscale='Agsunset'
+#       )
+#    )
+# cancerlayoutNP = go.Layout(title='Breast Cancer No Pruning Hyper Parameter 3D Scatter Plot')
+# cancerFigNP = go.Figure(data=[cancerTraceNP], layout=cancerlayoutNP)
+# cancerFigNP.update_layout(scene=dict(
+#                     xaxis_title='Max Depth',
+#                     yaxis_title='Minimum Gain',
+#                     zaxis_title='Accuracy'))
+# cancerFigNP.show()
+
+# Testing Pruned and NonPruned Trees
+
+print('Pruned Tree Results')
+CancerTestingPrunedResults = CrossValidation(cancerDF_80, 5, ID3_algo, maxDepth= 11, minSplit=3, minGain= 0.2)
+
+print('Unpruned Tree Results')
+CancerTestingNPResults = CrossValidation(carDF_80, 5, ID3_algo, maxDepth=0, minSplit=0, minGain= 0.2)
+
+CancerDict = {'Folds': numFolds, 'Pruned':CancerTestingPrunedResults,'Non-Pruned':CancerTestingNPResults}
+finalCancerResults = pd.DataFrame(CancerDict)
+
+CancerFinalFig = px.scatter(finalCancerResults, x='Folds', y=['Pruned', 'Non-Pruned'] , title="K-Fold vs. Accuracy", width=800, height=600)
+CancerFinalFig.update_traces(marker_size = 15)
+CancerFinalFig.update_yaxes(title_text = 'Accuracy %')
+CancerFinalFig.show()
